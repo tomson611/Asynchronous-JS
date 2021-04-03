@@ -26,7 +26,7 @@ const renderCountry = function (data, className = '') {
     </article>`;
 
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  //   countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 // const getCountryAndNeighbour = function (country) {
 //   // AJAX call country 1
@@ -103,4 +103,28 @@ const getCountryData = function (country) {
 btn.addEventListener('click', function () {
   getCountryData('poland');
 });
-getCountryData('Australia');
+
+const whereAmI = function (lat, lng) {
+  fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+    .then(response => {
+      if (!response.ok) throw new Error(`Throttled!`);
+      return response.json();
+    })
+    .then(data =>
+      fetch(
+        `https://restcountries.eu/rest/v2/name/${data.country.toLowerCase()}`
+      )
+    )
+    .then(response => {
+      if (!response.ok)
+        throw new Error(`Country not found! (${response.status})`);
+      return response.json();
+    })
+    .then(data => renderCountry(data[0]))
+    .catch(err => {
+      console.error(`${err.message}`);
+    });
+};
+whereAmI(52.508, 13.381);
+whereAmI(19.037, 72.873);
+whereAmI(-33.933, 18.474);
