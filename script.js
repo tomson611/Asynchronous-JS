@@ -69,62 +69,71 @@ const renderCountry = function (data, className = '') {
 // const request = fetch('https://restcountries.eu/rest/v2/name/portugal');
 // console.log(request);
 
-const getJSON = function (url, errorMsg = 'Something went wrong!') {
-  return fetch(url).then(response => {
-    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
-    return response.json();
-  });
-};
+// const getJSON = function (url, errorMsg = 'Something went wrong!') {
+//   return fetch(url).then(response => {
+//     if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+//     return response.json();
+//   });
+// };
 
-const getCountryData = function (country) {
-  getJSON(
-    `https://restcountries.eu/rest/v2/name/${country}`,
-    'Country now found!'
-  )
-    .then(data => {
-      renderCountry(data[0]);
-      const neighbour = data[0].borders[1];
-      if (!neighbour) throw new Error('No neighbour found!');
+// const getCountryData = function (country) {
+//   getJSON(
+//     `https://restcountries.eu/rest/v2/name/${country}`,
+//     'Country now found!'
+//   )
+//     .then(data => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[1];
+//       if (!neighbour) throw new Error('No neighbour found!');
 
-      return getJSON(
-        `https://restcountries.eu/rest/v2/alpha/${neighbour}`,
-        'Country not found'
-      );
-    })
-    .then(data => renderCountry(data, 'neighbour'))
-    .catch(err => {
-      console.error(`${err}`);
-      renderError(`Something went wrong! ${err.message} Try again! `);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
-};
-btn.addEventListener('click', function () {
-  getCountryData('poland');
+//       return getJSON(
+//         `https://restcountries.eu/rest/v2/alpha/${neighbour}`,
+//         'Country not found'
+//       );
+//     })
+//     .then(data => renderCountry(data, 'neighbour'))
+//     .catch(err => {
+//       console.error(`${err}`);
+//       renderError(`Something went wrong! ${err.message} Try again! `);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+// btn.addEventListener('click', function () {
+//   getCountryData('poland');
+// });
+
+// const whereAmI = function (lat, lng) {
+//   fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+//     .then(response => {
+//       if (!response.ok) throw new Error(`Throttled!`);
+//       return response.json();
+//     })
+//     .then(data =>
+//       fetch(
+//         `https://restcountries.eu/rest/v2/name/${data.country.toLowerCase()}`
+//       )
+//     )
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Country not found! (${response.status})`);
+//       return response.json();
+//     })
+//     .then(data => renderCountry(data[0]))
+//     .catch(err => {
+//       console.error(`${err.message}`);
+//     });
+// };
+// whereAmI(52.508, 13.381);
+// whereAmI(19.037, 72.873);
+// whereAmI(-33.933, 18.474);
+
+console.log('Test start');
+setTimeout(() => console.log('0 sec timer'), 0);
+Promise.resolve('Resolved promise 1').then(res => console.log(res));
+Promise.resolve('Resolved promise 2').then(res => {
+  for (let i = 0; i < 1000000000; i++) {}
+  console.log(res);
 });
-
-const whereAmI = function (lat, lng) {
-  fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
-    .then(response => {
-      if (!response.ok) throw new Error(`Throttled!`);
-      return response.json();
-    })
-    .then(data =>
-      fetch(
-        `https://restcountries.eu/rest/v2/name/${data.country.toLowerCase()}`
-      )
-    )
-    .then(response => {
-      if (!response.ok)
-        throw new Error(`Country not found! (${response.status})`);
-      return response.json();
-    })
-    .then(data => renderCountry(data[0]))
-    .catch(err => {
-      console.error(`${err.message}`);
-    });
-};
-whereAmI(52.508, 13.381);
-whereAmI(19.037, 72.873);
-whereAmI(-33.933, 18.474);
+console.log('Test end');
