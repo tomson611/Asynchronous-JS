@@ -138,39 +138,80 @@ const renderCountry = function (data, className = '') {
 // });
 // console.log('Test end');
 
-const lotteryPromise = new Promise(function (resolve, reject) {
-  console.log('Lottery draw is happening');
-  setTimeout(function () {
-    if (Math.random() >= 0.5) {
-      resolve('You WIN!');
-    } else {
-      reject(new Error('You lost lost your money!'));
-    }
-  }, 2000);
-});
+// const lotteryPromise = new Promise(function (resolve, reject) {
+//   console.log('Lottery draw is happening');
+//   setTimeout(function () {
+//     if (Math.random() >= 0.5) {
+//       resolve('You WIN!');
+//     } else {
+//       reject(new Error('You lost lost your money!'));
+//     }
+//   }, 2000);
+// });
 
-lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+// lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
-const wait = function (seconds) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, seconds * 1000);
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// wait(1)
+//   .then(() => {
+//     console.log('1 second pass');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('2 seconds passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('3 seconds passed');
+//     return wait(1);
+//   })
+//   .then(() => console.log('I waited for 4 seconds'));
+
+// Promise.resolve('abc').then(x => console.log(x));
+// Promise.reject('abc').catch(x => console.error(x));
+
+navigator.geolocation.getCurrentPosition(
+  position => console.log(position),
+  err => console.error(err)
+);
+
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
+// getPosition().then(pos => console.log(pos));
 
-wait(1)
-  .then(() => {
-    console.log('1 second pass');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('2 seconds passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('3 seconds passed');
-    return wait(1);
-  })
-  .then(() => console.log('I waited for 4 seconds'));
+const whereAmI = function () {
+  getPosition()
+    .then(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
 
-Promise.resolve('abc').then(x => console.log(x));
-Promise.reject('abc').catch(x => console.error(x));
+      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    })
+
+    .then(response => {
+      if (!response.ok) throw new Error(`Throttled!`);
+      return response.json();
+    })
+    .then(data =>
+      fetch(
+        `https://restcountries.eu/rest/v2/name/${data.country.toLowerCase()}`
+      )
+    )
+    .then(response => {
+      if (!response.ok)
+        throw new Error(`Country not found! (${response.status})`);
+      return response.json();
+    })
+    .then(data => renderCountry(data[0]))
+    .catch(err => {
+      console.error(`${err.message}`);
+    });
+};
+whereAmI();
