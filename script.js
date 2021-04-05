@@ -215,37 +215,60 @@ const wait = function (seconds) {
 //     });
 // };
 // whereAmI();
-const imgContainer = document.querySelector('.images');
+// const imgContainer = document.querySelector('.images');
 
-const createImage = function (imgPath) {
+// const createImage = function (imgPath) {
+//   return new Promise(function (resolve, reject) {
+//     let img = document.createElement('img');
+//     img.src = imgPath;
+//     img.addEventListener('load', () => {
+//       imgContainer.append(img);
+//       resolve(img);
+//     });
+//     img.addEventListener('error', () => {
+//       reject(new Error('Image loading issue'));
+//     });
+//   });
+// };
+
+// let currentImg;
+// createImage('img/img-1.jpg')
+//   .then(img => {
+//     currentImg = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//     return createImage('img/img-2.jpg');
+//   })
+//   .then(img => {
+//     currentImg = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//   })
+//   .catch(e => console.error(e));
+
+const getPosition = function () {
   return new Promise(function (resolve, reject) {
-    let img = document.createElement('img');
-    img.src = imgPath;
-    img.addEventListener('load', () => {
-      imgContainer.append(img);
-      resolve(img);
-    });
-    img.addEventListener('error', () => {
-      reject(new Error('Image loading issue'));
-    });
+    navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
 
-let currentImg;
-createImage('img/img-1.jpg')
-  .then(img => {
-    currentImg = img;
-    return wait(2);
-  })
-  .then(() => {
-    currentImg.style.display = 'none';
-    return createImage('img/img-2.jpg');
-  })
-  .then(img => {
-    currentImg = img;
-    return wait(2);
-  })
-  .then(() => {
-    currentImg.style.display = 'none';
-  })
-  .catch(e => console.error(e));
+const whereAmi = async function () {
+  const pos = await getPosition();
+  const { latitude: lat, longitude: lng } = pos.coords;
+
+  const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+  const dataGeo = await resGeo.json();
+
+  const res = await fetch(
+    `https://restcountries.eu/rest/v2/name/${dataGeo.country}`
+  );
+  const data = await res.json();
+  console.log(data);
+  renderCountry(data[0]);
+};
+whereAmi();
+console.log('First!');
