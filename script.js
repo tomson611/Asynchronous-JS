@@ -151,11 +151,11 @@ const renderCountry = function (data, className = '') {
 
 // lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
-// const wait = function (seconds) {
-//   return new Promise(function (resolve) {
-//     setTimeout(resolve, seconds * 1000);
-//   });
-// };
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
 
 // wait(1)
 //   .then(() => {
@@ -175,43 +175,77 @@ const renderCountry = function (data, className = '') {
 // Promise.resolve('abc').then(x => console.log(x));
 // Promise.reject('abc').catch(x => console.error(x));
 
-navigator.geolocation.getCurrentPosition(
-  position => console.log(position),
-  err => console.error(err)
-);
+// navigator.geolocation.getCurrentPosition(
+//   position => console.log(position),
+//   err => console.error(err)
+// );
 
-const getPosition = function () {
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
+// // getPosition().then(pos => console.log(pos));
+
+// const whereAmI = function () {
+//   getPosition()
+//     .then(pos => {
+//       const { latitude: lat, longitude: lng } = pos.coords;
+
+//       return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+//     })
+
+//     .then(response => {
+//       if (!response.ok) throw new Error(`Throttled!`);
+//       return response.json();
+//     })
+//     .then(data =>
+//       fetch(
+//         `https://restcountries.eu/rest/v2/name/${data.country.toLowerCase()}`
+//       )
+//     )
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Country not found! (${response.status})`);
+//       return response.json();
+//     })
+//     .then(data => renderCountry(data[0]))
+//     .catch(err => {
+//       console.error(`${err.message}`);
+//     });
+// };
+// whereAmI();
+const imgContainer = document.querySelector('.images');
+
+const createImage = function (imgPath) {
   return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject);
+    let img = document.createElement('img');
+    img.src = imgPath;
+    img.addEventListener('load', () => {
+      imgContainer.append(img);
+      resolve(img);
+    });
+    img.addEventListener('error', () => {
+      reject(new Error('Image loading issue'));
+    });
   });
 };
-// getPosition().then(pos => console.log(pos));
 
-const whereAmI = function () {
-  getPosition()
-    .then(pos => {
-      const { latitude: lat, longitude: lng } = pos.coords;
-
-      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-    })
-
-    .then(response => {
-      if (!response.ok) throw new Error(`Throttled!`);
-      return response.json();
-    })
-    .then(data =>
-      fetch(
-        `https://restcountries.eu/rest/v2/name/${data.country.toLowerCase()}`
-      )
-    )
-    .then(response => {
-      if (!response.ok)
-        throw new Error(`Country not found! (${response.status})`);
-      return response.json();
-    })
-    .then(data => renderCountry(data[0]))
-    .catch(err => {
-      console.error(`${err.message}`);
-    });
-};
-whereAmI();
+let currentImg;
+createImage('img/img-1.jpg')
+  .then(img => {
+    currentImg = img;
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+    return createImage('img/img-2.jpg');
+  })
+  .then(img => {
+    currentImg = img;
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+  })
+  .catch(e => console.error(e));
