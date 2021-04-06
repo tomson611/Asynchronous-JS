@@ -69,12 +69,12 @@ const renderCountry = function (data, className = '') {
 // const request = fetch('https://restcountries.eu/rest/v2/name/portugal');
 // console.log(request);
 
-// const getJSON = function (url, errorMsg = 'Something went wrong!') {
-//   return fetch(url).then(response => {
-//     if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
-//     return response.json();
-//   });
-// };
+const getJSON = function (url, errorMsg = 'Something went wrong!') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
+};
 
 // const getCountryData = function (country) {
 //   getJSON(
@@ -250,39 +250,54 @@ const wait = function (seconds) {
 //   })
 //   .catch(e => console.error(e));
 
-const getPosition = function () {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject);
-  });
-};
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
 
-const whereAmi = async function () {
+// const whereAmi = async function () {
+//   try {
+//     const pos = await getPosition();
+//     const { latitude: lat, longitude: lng } = pos.coords;
+
+//     const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+//     if (!resGeo.ok) throw new Error('Problem getting location data');
+//     const dataGeo = await resGeo.json();
+
+//     const res = await fetch(
+//       `https://restcountries.eu/rest/v2/name/${dataGeo.country}`
+//     );
+//     if (!res.ok) throw new Error('Problem getting country');
+//     const data = await res.json();
+//     renderCountry(data[0]);
+
+//     return `You are in ${dataGeo.city}, ${dataGeo.country}`;
+//   } catch (err) {
+//     console.error(err);
+//     renderError(`${err.message}.`);
+//     throw err;
+//   }
+// };
+// console.log('1: will get location');
+// // whereAmi()
+// //   .then(city => console.log(`2: ${city}`))
+// //   .catch(err => console.error(`2: ${err.message}`))
+// //   .finally(() => console.log('3: Finished getting location'));
+
+// (async function () {
+//   try {
+//     const city = await whereAmi();
+//     console.log(`2: ${city}`);
+//   } catch (err) {
+//     console.error(`2: ${err.message}`);
+//   }
+//   console.log('3: Finished getting location');
+// })();
+
+const get3Countries = async function (c1, c2, c3) {
   try {
-    const pos = await getPosition();
-    const { latitude: lat, longitude: lng } = pos.coords;
-
-    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-    if (!resGeo.ok) throw new Error('Problem getting location data');
-    const dataGeo = await resGeo.json();
-
-    const res = await fetch(
-      `https://restcountries.eu/rest/v2/name/${dataGeo.country}`
-    );
-    if (!res.ok) throw new Error('Problem getting country');
-    const data = await res.json();
-    renderCountry(data[0]);
   } catch (err) {
     console.error(err);
-    renderError(`${err.message}.`);
   }
 };
-whereAmi();
-console.log('First!');
-
-// try {
-//   let y = 1;
-//   const x = 2;
-//   x = 3;
-// } catch (err) {
-//   console.error(` Error: ${err.message}`);
-// }
