@@ -295,27 +295,96 @@ const wait = function (seconds) {
 //   console.log('3: Finished getting location');
 // })();
 
-const get3Countries = async function (c1, c2, c3) {
-  try {
-    // const [data1] = await getJSON(
-    //   `https://restcountries.eu/rest/v2/name/${c1}`
-    // );
-    // const [data2] = await getJSON(
-    //   `https://restcountries.eu/rest/v2/name/${c2}`
-    // );
-    // const [data3] = await getJSON(
-    //   `https://restcountries.eu/rest/v2/name/${c3}`
-    // );
+// const get3Countries = async function (c1, c2, c3) {
+//   try {
+//     // const [data1] = await getJSON(
+//     //   `https://restcountries.eu/rest/v2/name/${c1}`
+//     // );
+//     // const [data2] = await getJSON(
+//     //   `https://restcountries.eu/rest/v2/name/${c2}`
+//     // );
+//     // const [data3] = await getJSON(
+//     //   `https://restcountries.eu/rest/v2/name/${c3}`
+//     // );
 
-    const data = await Promise.all([
-      getJSON(`https://restcountries.eu/rest/v2/name/${c1}`),
-      getJSON(`https://restcountries.eu/rest/v2/name/${c2}`),
-      getJSON(`https://restcountries.eu/rest/v2/name/${c3}`),
-    ]);
+//     const data = await Promise.all([
+//       getJSON(`https://restcountries.eu/rest/v2/name/${c1}`),
+//       getJSON(`https://restcountries.eu/rest/v2/name/${c2}`),
+//       getJSON(`https://restcountries.eu/rest/v2/name/${c3}`),
+//     ]);
 
-    console.log(data.map(d => d[0].capital));
-  } catch (err) {
-    console.error(err);
-  }
+//     console.log(data.map(d => d[0].capital));
+//   } catch (err) {
+//     console.error(err);
+//   }
+// };
+// get3Countries('poland', 'portugal', 'germany');
+
+// (async function () {
+//   const res = await Promise.race([
+//     getJSON(`https://restcountries.eu/rest/v2/name/italy`),
+//     getJSON(`https://restcountries.eu/rest/v2/name/egypt`),
+//     getJSON(`https://restcountries.eu/rest/v2/name/mexico`),
+//   ]);
+//   console.log(res[0]);
+// })();
+
+// const timeout = function (sec) {
+//   return new Promise(function (_, reject) {
+//     setTimeout(function () {
+//       reject(new Error('Request took too long!'));
+//     }, sec * 1000);
+//   });
+// };
+
+// Promise.race([
+//   getJSON(`https://restcountries.eu/rest/v2/name/italy`),
+//   timeout(1),
+// ])
+//   .then(res => console.log(res[0]))
+//   .catch(err => console.log(err));
+
+// Promise.allSettled([
+//   Promise.resolve('Success'),
+//   Promise.reject('Error'),
+//   Promise.resolve('Success!!!'),
+// ]).then(res => console.log(res));
+
+// Promise.any([
+//   Promise.resolve('Success'),
+//   Promise.reject('Error'),
+//   Promise.resolve('Success!!!'),
+// ]).then(res => console.log(res));
+
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    let img = document.createElement('img');
+    img.src = imgPath;
+    img.addEventListener('load', () => {
+      imgContainer.append(img);
+      resolve(img);
+    });
+    img.addEventListener('error', () => {
+      reject(new Error('Image loading issue'));
+    });
+  });
 };
-get3Countries('poland', 'portugal', 'germany');
+
+let currentImg;
+createImage('img/img-1.jpg')
+  .then(img => {
+    currentImg = img;
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+    return createImage('img/img-2.jpg');
+  })
+  .then(img => {
+    currentImg = img;
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+  })
+  .catch(e => console.error(e));
