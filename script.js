@@ -215,7 +215,7 @@ const wait = function (seconds) {
 //     });
 // };
 // whereAmI();
-// const imgContainer = document.querySelector('.images');
+const imgContainer = document.querySelector('.images');
 
 // const createImage = function (imgPath) {
 //   return new Promise(function (resolve, reject) {
@@ -371,20 +371,51 @@ const createImage = function (imgPath) {
 };
 
 let currentImg;
-createImage('img/img-1.jpg')
-  .then(img => {
-    currentImg = img;
-    return wait(2);
-  })
-  .then(() => {
+// createImage('img/img-1.jpg')
+//   .then(img => {
+//     currentImg = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//     return createImage('img/img-2.jpg');
+//   })
+//   .then(img => {
+//     currentImg = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//   })
+//   .catch(e => console.error(e));
+
+const loadNPause = async function () {
+  try {
+    const img1 = await createImage('img/img-1.jpg');
+    currentImg = img1;
+    await wait(2);
     currentImg.style.display = 'none';
-    return createImage('img/img-2.jpg');
-  })
-  .then(img => {
-    currentImg = img;
-    return wait(2);
-  })
-  .then(() => {
+
+    const img2 = await createImage('img/img-2.jpg');
+    currentImg = img2;
+    await wait(2);
     currentImg.style.display = 'none';
-  })
-  .catch(e => console.error(e));
+  } catch (e) {
+    console.error(e);
+  }
+};
+// loadNPause();
+
+const loadAll = async function (imgArr) {
+  try {
+    const imgs = imgArr.map(async img => await createImage(img));
+    console.log(imgs);
+    const arr = Promise.all(imgs);
+    arr.forEach(img => img.classList.add('parallel'));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg'];
+loadAll(['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']);
